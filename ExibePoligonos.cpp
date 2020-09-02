@@ -38,15 +38,21 @@ using namespace std;
 
 #include "Ponto.h"
 #include "Poligono.h"
+#include "Faixa.h"
+#include "Aresta.h"
 
 #include "Temporizador.h"
 Temporizador T;
 double AccumDeltaT=0;
+float numFaixas = 10;
 
 Poligono Mapa;
 Poligono ConvexHull;
 // Limites l—gicos da ‡rea de desenho
 Ponto Min, Max;
+
+vector <Faixa> faixas;
+float distanciaEntreFaixas;
 
 // **********************************************************************
 //    Calcula o produto escalar entre os vetores V1 e V2
@@ -160,58 +166,37 @@ void LeMapa(const char *nome)
 //
 
 /**
- * Calculo o index do ponto com menor Y no poligono Mapa.
- *
- * @return int index do ponto.
+ * Carrega as faixas com base no tamanho do poligono desenhado.
  */
-int getMinimo(){
-    Ponto auxMinimo = Mapa.getVertice(0);
-    int intAuxMinimo = 0;
-    for (int i=1; i< Mapa.getNVertices(); i++){
-        if(Mapa.getVertice(i).y < auxMinimo.y){
-            auxMinimo = Mapa.getVertice(i);
-            intAuxMinimo = i;
+void carregaFaixas(){
+    float deltaTamanho = (Max.y - Min.y);
+    distanciaEntreFaixas = deltaTamanho / numFaixas;
+
+    for(int i = 0; i < numFaixas; i++){
+        Faixa novaFaixa = Faixa((Min.y)+ (i * distanciaEntreFaixas), distanciaEntreFaixas);
+
+        faixas.push_back(novaFaixa);
+    }
+
+    //Adiciona as arestas nas faixas correspondentes.
+    for(int i = 0; i < Mapa.getNVertices(); i++){
+        Aresta novaAresta = Aresta(Mapa.getVertice(i), Mapa.getVertice(i+1));
+
+        //Calcula o intervalo de faixas a qual a aresta esta presente
+        //Fazemos - Min.y para descobrir a distancia do menor ponto ate o ponto y testado
+        //Pois caso o y fosse negativo apenas dividir nao retornaria o index na lista de faixas
+        int faixaInicial = (int)((novaAresta.getP1().y - Min.y)/ distanciaEntreFaixas);
+        int faixaFinal = (int)((novaAresta.getP2().y - Min.y) / distanciaEntreFaixas);
+
+        //Passamos pelo intervalo de faixas adicionando a nova aresta
+        for(int faixa = faixaInicial; faixa < faixaFinal + 1; faixa++){
+            faixas[faixa].addAresta(novaAresta);
         }
     }
-
-    return intAuxMinimo;
 }
 
 /**
- * Calculo o index do ponto com maior Y no poligono Mapa.
- *
- * @return int index do ponto.
- */
-int getMaximo(){
-    Ponto auxMax = Mapa.getVertice(0);
-    int intAuxMax = 0;
-    for (int i=1; i< Mapa.getNVertices(); i++){
-        if(Mapa.getVertice(i).y > auxMax.y){
-            auxMax = Mapa.getVertice(i);
-            intAuxMax = i;
-        }
-    }
-
-    return intAuxMax;
-}
-
-/**
- * Copia os vertices do Poligono Mapa para um vetor a parte.
- *
- * @return vector<Ponto> contendo os pontos do poligono.
- */
-vector <Ponto> cpyPontosMapa(){
-    vector <Ponto> vertices;
-    for (int i=0; i< Mapa.getNVertices(); i++){
-        Ponto vAtual = Mapa.getVertice(i);
-        vertices.push_back(Ponto(vAtual.x, vAtual.y));
-    }
-
-    return vertices;
-}
-
-/**
- * Vetor gerado por dois pontos
+ * Vetor gerado por dois pontos.
  *
  * @param Ponto p1: Ponto A do vetor a ser gerado (origem)
  * @param Ponto p2: Ponto B do vetor a ser gerado (destino)
@@ -297,14 +282,14 @@ double getAnguloHorizontal(Ponto v2, int ladoDireito){
  */
 void getConvexHull(){
     //Copia dos vertices para que possamos excluir os ja visitados.
-    vector <Ponto> vertices = cpyPontosMapa();
+    vector <Ponto> vertices = Mapa.cpyPontosMapa();
 
     //Ponto com menor Y em Mapa para iniciar o algoritmo;
-    int indexMinimo = getMinimo();
+    int indexMinimo = Mapa.getMinimo();
     Ponto ptMinimo = vertices[indexMinimo];
 
     //Ponto com maior Y em Mapa para trocar a logica dos angulos em getAnguloHorizontal().
-    int indexMaximo = getMaximo();
+    int indexMaximo = Mapa.getMaximo();
     Ponto ptMaximo = vertices[indexMaximo];
 
     //Inicialemente, vamos para o lado direito do poligono.
@@ -361,6 +346,7 @@ void initOLD()
     getConvexHull();
     Min.x--;Min.y--;
     Max.x++;Max.y++;
+    carregaFaixas();
     //cout << "Vertices no Vetor: " << Mapa.getNVertices() << endl;
 
 }
@@ -389,6 +375,8 @@ void init(void)
     // Seta os limites da ‡rea de desenho
     Min = Ponto(-10, -10, 0);
     Max = Ponto( 10,  10, 1);
+
+    carregaFaixas();
 }
 
 
@@ -458,6 +446,17 @@ void DesenhaEixos()
         glVertex2f(Meio.x,Max.y);
     glEnd();
 }
+
+// **********************************************************************
+//
+// **********************************************************************
+void DesenhaFaixas()
+{
+    for(int i = 0; i < faixas.size(); i++){
+        faixas[i].desenhaFaixa(Min.x, Max.x);
+    }
+}
+
 // **********************************************************************
 //  void display( void )
 //
@@ -491,6 +490,10 @@ void display( void )
 	glPointSize(5);
     glColor3f(0,1,0); // R, G, B  [0..1]
     Mapa.desenhaVertices();
+
+    glLineWidth(1);
+    glColor3f(0.5,0.5,0); // R, G, B  [0..1]
+    DesenhaFaixas();
 
 	glutSwapBuffers();
 }

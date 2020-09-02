@@ -61,7 +61,11 @@
 			<Add option="-Wno-narrowing" />
 			<Add option="-Wno-deprecated-declarations" />
 		</Compiler>
+		<Unit filename="Aresta.cpp" />
+		<Unit filename="Aresta.h" />
 		<Unit filename="ExibePoligonos.cpp" />
+		<Unit filename="Faixa.cpp" />
+		<Unit filename="Faixa.h" />
 		<Unit filename="Poligono.cpp" />
 		<Unit filename="Poligono.h" />
 		<Unit filename="Ponto.cpp" />

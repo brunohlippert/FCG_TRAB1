@@ -40,6 +40,9 @@ public:
     void desenhaPoligono();
     void desenhaVertices();
     void imprime();
+    int getMinimo();
+    int getMaximo();
+    vector <Ponto> cpyPontosMapa();
 };
 
-#endif 
+#endif

@@ -85,10 +85,10 @@
 1584988348 source:d:\pinho\poligonos\temporizador.cpp
 	"Temporizador.h"
 
-1597840588 source:c:\users\pertu\documents\pucrs\fundamentoscg\trab1\poligonos\poligono.cpp
+1599003600 source:c:\users\pertu\documents\pucrs\fundamentoscg\trab1\poligonos\poligono.cpp
 	"Poligono.h"
 
-1597840594 c:\users\pertu\documents\pucrs\fundamentoscg\trab1\poligonos\poligono.h
+1599003470 c:\users\pertu\documents\pucrs\fundamentoscg\trab1\poligonos\poligono.h
 	<iostream>
 	<windows.h>
 	<glut.h>
@@ -125,7 +125,7 @@
 	<windows.h>
 	<sys/time.h>
 
-1598616294 source:c:\users\pertu\documents\pucrs\fundamentoscg\trab1\poligonos\exibepoligonos.cpp
+1599015954 source:c:\users\pertu\documents\pucrs\fundamentoscg\trab1\poligonos\exibepoligonos.cpp
 	<iostream>
 	<cmath>
 	<ctime>
@@ -137,5 +137,30 @@
 	<glut.h>
 	"Ponto.h"
 	"Poligono.h"
+	"Faixa.h"
+	"Aresta.h"
 	"Temporizador.h"
+
+1599015168 source:c:\users\pertu\documents\pucrs\fundamentoscg\trab1\poligonos\faixa.cpp
+	"Faixa.h"
+
+1599015153 c:\users\pertu\documents\pucrs\fundamentoscg\trab1\poligonos\faixa.h
+	<iostream>
+	<windows.h>
+	<glut.h>
+	<GLUT/glut.h>
+	<glut.h>
+	"Aresta.h"
+	<vector>
+
+1599013653 c:\users\pertu\documents\pucrs\fundamentoscg\trab1\poligonos\aresta.h
+	<iostream>
+	<windows.h>
+	<glut.h>
+	<GLUT/glut.h>
+	<glut.h>
+	"Ponto.h"
+
+1599014707 source:c:\users\pertu\documents\pucrs\fundamentoscg\trab1\poligonos\aresta.cpp
+	"Aresta.h"
 
