@@ -179,7 +179,7 @@ void carregaFaixas(){
     }
 
     //Adiciona as arestas nas faixas correspondentes.
-    for(int i = 0; i < Mapa.getNVertices(); i++){
+    for(int i = 0; i < Mapa.getNVertices() - 1; i++){
         Aresta novaAresta = Aresta(Mapa.getVertice(i), Mapa.getVertice(i+1));
 
         //Calcula o intervalo de faixas a qual a aresta esta presente
@@ -192,6 +192,10 @@ void carregaFaixas(){
         for(int faixa = faixaInicial; faixa < faixaFinal + 1; faixa++){
             faixas[faixa].addAresta(novaAresta);
         }
+    }
+
+    for(int i = 0; i < numFaixas; i++){
+        cout << "Faixa " << i << " arestas: " << faixas[i].getArestas().size() << endl;
     }
 }
 
@@ -360,15 +364,16 @@ void init(void)
     glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
 
     // Leitura do arquivo
-    Mapa.insereVertice(Ponto(0,0));
+    Mapa.insereVertice(Ponto(-2,1));
     Mapa.insereVertice(Ponto(-3,5));
     Mapa.insereVertice(Ponto(3,3));
     Mapa.insereVertice(Ponto(5,5));
-    Mapa.insereVertice(Ponto(5,2));
+    Mapa.insereVertice(Ponto(5,3));
     Mapa.insereVertice(Ponto(8,-5));
     Mapa.insereVertice(Ponto(4,-1));
-    Mapa.insereVertice(Ponto(-2,-2));
+    Mapa.insereVertice(Ponto(-1,-1));
     Mapa.insereVertice(Ponto(-4,-3));
+    Mapa.insereVertice(Ponto(-2,1));
 
     getConvexHull();
 
@@ -400,9 +405,9 @@ void animate()
     }
     if (TempoTotal > 5.0)
     {
-        cout << "Tempo Acumulado: "  << TempoTotal << " segundos. " ;
-        cout << "Nros de Frames sem desenho: " << nFrames << endl;
-        cout << "FPS(sem desenho): " << nFrames/TempoTotal << endl;
+        //cout << "Tempo Acumulado: "  << TempoTotal << " segundos. " ;
+        //cout << "Nros de Frames sem desenho: " << nFrames << endl;
+        //cout << "FPS(sem desenho): " << nFrames/TempoTotal << endl;
         TempoTotal = 0;
         nFrames = 0;
     }
