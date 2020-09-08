@@ -115,6 +115,7 @@ bool HaInterseccao(Ponto k, Ponto l, Ponto m, Ponto n)
 
 
 void LeMapa(const char *nome)
+
 {
     ifstream input;
     input.open(nome, ios::in);
@@ -136,8 +137,8 @@ void LeMapa(const char *nome)
 
     Min = Ponto(x,y);
     Max = Ponto(x,y);
-
-    for (int i=1; i< qtdVertices; i++)
+    Mapa.insereVertice(Ponto(x,y));
+    for (int i=0; i< qtdVertices; i++)
     {
         // Le cada elemento da linha
         input >> x >> y;
@@ -147,7 +148,6 @@ void LeMapa(const char *nome)
 
         if (x>Max.x) Max.x = x;
         if (y>Max.y) Max.y = y;
-
         if(!input)
             break;
         nLinha++;
@@ -157,9 +157,11 @@ void LeMapa(const char *nome)
     cout << "leitura concluida." << endl;
     //cout << "Linhas lidas: " << nLinha << endl;
     //cout << "Limites:" << endl;
-    //Min.imprime();
-    //Max.imprime();
+    cout << "Minimo:"; Min.imprime();
+    cout << "\tMaximo:"; Max.imprime();
+    cout << endl;
 }
+
 
 //
 //          IMPLEMENTACOES DO TRABALHO
