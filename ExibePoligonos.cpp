@@ -46,6 +46,11 @@ Temporizador T;
 double AccumDeltaT=0;
 float numFaixas = 10;
 
+//Variaveis de dados
+Temporizador timeClassifica;
+int numVezesProdVetorial = 0;
+int numVezesHaIntersec = 0;
+
 Poligono Mapa;
 Poligono ConvexHull;
 // Limites l—gicos da ‡rea de desenho
@@ -76,6 +81,7 @@ double ProdEscalar(Ponto v1, Ponto v2)
 // **********************************************************************
 void ProdVetorial (Ponto v1, Ponto v2, Ponto &vresult)
 {
+    numVezesProdVetorial++;
     vresult.x = v1.y * v2.z - (v1.z * v2.y);
     vresult.y = v1.z * v2.x - (v1.x * v2.z);
     vresult.z = v1.x * v2.y - (v1.y * v2.x);
@@ -111,6 +117,7 @@ int intersec2d(Ponto k, Ponto l, Ponto m, Ponto n, double &s, double &t)
 // **********************************************************************
 bool HaInterseccao(Ponto k, Ponto l, Ponto m, Ponto n)
 {
+    numVezesHaIntersec++;
     int ret;
     double s,t;
     ret = intersec2d( k,  l,  m,  n, s, t);
@@ -343,8 +350,6 @@ void getConvexHull(){
             break;
         }
     }
-
-    cout << ConvexHull.getNVertices();
 }
 
 bool ehMaximoMinimoLocal(int indexPonto){
@@ -537,6 +542,12 @@ void classificaPontos(){
     }
 }
 
+void printResults(){
+    cout << "Tempo: " << timeClassifica.getDeltaT() << endl;
+    cout << "Prod vetorial: " << numVezesProdVetorial  << endl;
+    cout << "Ha intersec: " << numVezesHaIntersec  << endl;
+}
+
 
 // **********************************************************************
 //
@@ -552,7 +563,9 @@ void initOLD()
     Max.x++;Max.y++;
     carregaFaixas();
     gerarPontosAleatorios();
+    timeClassifica.getDeltaT();
     classificaPontos();
+    printResults();
 
 }
 // **********************************************************************
@@ -584,7 +597,9 @@ void init(void)
 
     carregaFaixas();
     gerarPontosAleatorios();
+    timeClassifica.getDeltaT();
     classificaPontos();
+    printResults();
 }
 
 
