@@ -26,3 +26,18 @@ void Ponto::set(float x, float y, float z)
 void Ponto::imprime() {
     cout << "(" << x << ", " << y << ")" << flush;
 }
+
+
+void Ponto::desenha()
+{
+    glColor3f(this->red, this->green, this->blue);
+    glBegin(GL_POINTS);
+    glVertex3f(this->x, this->y, this->z);
+    glEnd();
+}
+
+void Ponto::setaCor(float red, float green, float blue){
+    this->red = red;
+    this->green = green;
+    this->blue = blue;
+}

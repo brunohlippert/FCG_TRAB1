@@ -111,10 +111,14 @@
 
 1298986600 c:\users\pertu\documents\pucrs\fundamentoscg\trab1\poligonos\gl\freeglut_ext.h
 
-1597783594 c:\users\pertu\documents\pucrs\fundamentoscg\trab1\poligonos\ponto.h
+1599694278 c:\users\pertu\documents\pucrs\fundamentoscg\trab1\poligonos\ponto.h
 	<iostream>
+	<windows.h>
+	<glut.h>
+	<GLUT/glut.h>
+	<glut.h>
 
-1597784052 source:c:\users\pertu\documents\pucrs\fundamentoscg\trab1\poligonos\ponto.cpp
+1599694381 source:c:\users\pertu\documents\pucrs\fundamentoscg\trab1\poligonos\ponto.cpp
 	"Ponto.h"
 
 1584988348 source:c:\users\pertu\documents\pucrs\fundamentoscg\trab1\poligonos\temporizador.cpp
@@ -125,7 +129,7 @@
 	<windows.h>
 	<sys/time.h>
 
-1599046035 source:c:\users\pertu\documents\pucrs\fundamentoscg\trab1\poligonos\exibepoligonos.cpp
+1599697765 source:c:\users\pertu\documents\pucrs\fundamentoscg\trab1\poligonos\exibepoligonos.cpp
 	<iostream>
 	<cmath>
 	<ctime>

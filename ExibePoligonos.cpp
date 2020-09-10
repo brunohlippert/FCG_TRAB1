@@ -52,7 +52,16 @@ Poligono ConvexHull;
 Ponto Min, Max;
 
 vector <Faixa> faixas;
+
+int qtdPontos = 5;
+vector <Ponto> pontosAleatorios;
+
 float distanciaEntreFaixas;
+
+//0 = forca bruta
+//1 = convex hull + forca bruta
+//2 = forca bruta usando faixas
+int algotimoDeInclusao = 0;
 
 // **********************************************************************
 //    Calcula o produto escalar entre os vetores V1 e V2
@@ -195,10 +204,6 @@ void carregaFaixas(){
             faixas[faixa].addAresta(novaAresta);
         }
     }
-
-    for(int i = 0; i < numFaixas; i++){
-        cout << "Faixa " << i << " arestas: " << faixas[i].getArestas().size() << endl;
-    }
 }
 
 /**
@@ -339,6 +344,100 @@ void getConvexHull(){
     }
 }
 
+bool ehMaximoMinimoLocal(int indexPonto){
+    Ponto anterior;
+    Ponto proximo;
+
+    Ponto atual = Mapa.getVertice(indexPonto);
+
+    if(indexPonto == 0){
+        anterior = Mapa.getVertice(Mapa.getNVertices() - 1);
+        proximo = Mapa.getVertice(indexPonto + 1);
+    } else if (indexPonto == Mapa.getNVertices() - 1){
+        anterior = Mapa.getVertice(indexPonto - 1);
+        proximo = Mapa.getVertice(0);
+    } else {
+        anterior = Mapa.getVertice(indexPonto - 1);
+        proximo = Mapa.getVertice(indexPonto + 1);
+    }
+
+    return (anterior.y < atual.y && proximo.y < atual.y) || (anterior.y > atual.y && proximo.y > atual.y);
+}
+
+/**
+ * Algoritmo de força bruta para testar se um ponto esta dentro ou fora do poligono.
+ * @param Ponto p eh o ponto sendo testado.
+ * @return bool se o ponto esta dentro do poligono Mapa ou nao.
+ */
+bool estaDentroForcaBruta(Ponto p){
+    int intersecoes = 0;
+    //Pega o ponto mais a esquerda na mesma altura do ponto para formar
+    //A linha que vai para a esquerda
+    Ponto pontoMaisEsquerda = Ponto(Min.x, p.y);
+
+    for(int i = 0; i < Mapa.getNVertices() - 1; i++){
+        Ponto arestP1 = Mapa.getVertice(i);
+        Ponto arestP2 = Mapa.getVertice(i+1);
+
+        if(HaInterseccao(p, pontoMaisEsquerda, arestP1, arestP2)){
+            //Primeira condicao verifica se nao passa por um ponto qualquer do mapa
+            //Dai temos que contar apenas uma vez que passou por ele
+            if(arestP2.y != p.y && arestP1.y != p.y){
+                intersecoes++;
+            } else {
+                if(arestP1.y == p.y){
+                    if(!ehMaximoMinimoLocal(i)){
+                        intersecoes++;
+                    } else {
+                        intersecoes+= 2;
+                    }
+                } else if (arestP2.y == p.y){
+                    if(ehMaximoMinimoLocal(i+1)){
+                        intersecoes+= 2;
+                    }
+                }
+
+            }
+
+        }
+    }
+
+    //Se impar return true
+    return intersecoes % 2 != 0;
+}
+
+void gerarPontosAleatorios(){
+
+   for(int i = 0; i < qtdPontos; i++){
+        int range = Max.x - Min.x + 1;
+        int xRand = rand() % range + Min.x;
+
+        range = Max.y - Min.y + 1;
+        int yRand = rand() % range + Min.y;
+
+        pontosAleatorios.push_back(Ponto(xRand, yRand));
+    }
+/*
+    pontosAleatorios.push_back(Ponto(6, 3));
+    pontosAleatorios.push_back(Ponto(4, 3));
+    pontosAleatorios.push_back(Ponto(2, 3));
+    pontosAleatorios.push_back(Ponto(-5, 3));
+    pontosAleatorios.push_back(Ponto(8, 1));*/
+}
+
+void classificaPontos(){
+    for(int i = 0; i < qtdPontos; i++){
+        //Forca bruta
+        if(algotimoDeInclusao == 0){
+            if(estaDentroForcaBruta(pontosAleatorios[i])){
+                pontosAleatorios[i].setaCor(0, 0, 0.8);
+            }else{
+                pontosAleatorios[i].setaCor(0.8, 0, 0);
+            }
+        }
+    }
+}
+
 
 // **********************************************************************
 //
@@ -353,7 +452,8 @@ void initOLD()
     Min.x--;Min.y--;
     Max.x++;Max.y++;
     carregaFaixas();
-    //cout << "Vertices no Vetor: " << Mapa.getNVertices() << endl;
+    gerarPontosAleatorios();
+    classificaPontos();
 
 }
 // **********************************************************************
@@ -384,6 +484,8 @@ void init(void)
     Max = Ponto( 10,  10, 1);
 
     carregaFaixas();
+    gerarPontosAleatorios();
+    classificaPontos();
 }
 
 
@@ -434,6 +536,14 @@ void reshape( int w, int h )
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 }
+
+void DesenhaPontos(){
+    for(int i = 0; i < qtdPontos; i++){
+        glPointSize(8);
+        pontosAleatorios[i].desenha();
+    }
+}
+
 // **********************************************************************
 //
 // **********************************************************************
@@ -501,6 +611,8 @@ void display( void )
     glLineWidth(1);
     glColor3f(0.5,0.5,0); // R, G, B  [0..1]
     DesenhaFaixas();
+
+    DesenhaPontos();
 
 	glutSwapBuffers();
 }
