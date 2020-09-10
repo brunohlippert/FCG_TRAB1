@@ -62,7 +62,7 @@ float distanciaEntreFaixas;
 //2 = convex hull + forca bruta usando faixas
 //3 = forca bruta
 //4 = forca bruta usando faixas
-int algotimoDeInclusao = 1;
+int algotimoDeInclusao = 2;
 
 // **********************************************************************
 //    Calcula o produto escalar entre os vetores V1 e V2
@@ -410,6 +410,50 @@ bool estaDentroForcaBruta(Ponto p){
 }
 
 /**
+ * Algoritmo de força bruta com faixas para testar se um ponto esta dentro ou fora do poligono.
+ * @param Ponto p eh o ponto sendo testado.
+ * @return bool se o ponto esta dentro do poligono Mapa ou nao.
+ */
+bool estaDentroForcaBrutaFaixas(Ponto p){
+    int intersecoes = 0;
+    //Pega o ponto mais a esquerda na mesma altura do ponto para formar
+    //A linha que vai para a esquerda
+    Ponto pontoMaisEsquerda = Ponto(Min.x, p.y);
+
+    int faixaDoPonto = (p.y - Min.y) / distanciaEntreFaixas;
+
+    for(int i = 0; i < faixas[faixaDoPonto].getArestas().size(); i++){
+        Ponto arestP1 = faixas[faixaDoPonto].getArestas()[i].getP1();
+        Ponto arestP2 = faixas[faixaDoPonto].getArestas()[i].getP2();
+
+        if(HaInterseccao(p, pontoMaisEsquerda, arestP1, arestP2)){
+            //Primeira condicao verifica se nao passa por um ponto qualquer do mapa
+            //Dai temos que contar apenas uma vez que passou por ele
+            if(arestP2.y != p.y && arestP1.y != p.y){
+                intersecoes++;
+            } else {
+                if(arestP1.y == p.y){
+                    if(!ehMaximoMinimoLocal(i)){
+                        intersecoes++;
+                    } else {
+                        intersecoes+= 2;
+                    }
+                } else if (arestP2.y == p.y){
+                    if(ehMaximoMinimoLocal(i+1)){
+                        intersecoes+= 2;
+                    }
+                }
+
+            }
+
+        }
+    }
+
+    //Se impar return true
+    return intersecoes % 2 != 0;
+}
+
+/**
  */
 bool estaDentroConvexHull(Ponto p){
     Ponto atualPonto;
@@ -449,12 +493,6 @@ void gerarPontosAleatorios(){
 
         pontosAleatorios.push_back(Ponto(xRand, yRand));
     }
-/*
-    pontosAleatorios.push_back(Ponto(6, 3));
-    pontosAleatorios.push_back(Ponto(4, 3));
-    pontosAleatorios.push_back(Ponto(2, 3));
-    pontosAleatorios.push_back(Ponto(-5, 3));
-    pontosAleatorios.push_back(Ponto(8, 1));*/
 }
 
 void classificaPontos(){
@@ -472,8 +510,12 @@ void classificaPontos(){
             }
         // convex hull + forca bruta usando faixas
         } else if(algotimoDeInclusao == 2){
-            if(estaDentroForcaBruta(pontosAleatorios[i])){
-                pontosAleatorios[i].setaCor(0, 0, 0.8);
+            if(estaDentroConvexHull(pontosAleatorios[i])){
+                if(estaDentroForcaBrutaFaixas(pontosAleatorios[i])){
+                    pontosAleatorios[i].setaCor(0, 0, 0.8);
+                }else{
+                    pontosAleatorios[i].setaCor(1, 1, 0);
+                }
             }else{
                 pontosAleatorios[i].setaCor(0.8, 0, 0);
             }
@@ -486,7 +528,7 @@ void classificaPontos(){
             }
         //forca bruta usando faixas
         } else if(algotimoDeInclusao == 4){
-            if(estaDentroForcaBruta(pontosAleatorios[i])){
+            if(estaDentroForcaBrutaFaixas(pontosAleatorios[i])){
                 pontosAleatorios[i].setaCor(0, 0, 0.8);
             }else{
                 pontosAleatorios[i].setaCor(0.8, 0, 0);
