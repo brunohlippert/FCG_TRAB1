@@ -53,15 +53,16 @@ Ponto Min, Max;
 
 vector <Faixa> faixas;
 
-int qtdPontos = 5;
+int qtdPontos = 30;
 vector <Ponto> pontosAleatorios;
 
 float distanciaEntreFaixas;
 
-//0 = forca bruta
 //1 = convex hull + forca bruta
-//2 = forca bruta usando faixas
-int algotimoDeInclusao = 0;
+//2 = convex hull + forca bruta usando faixas
+//3 = forca bruta
+//4 = forca bruta usando faixas
+int algotimoDeInclusao = 1;
 
 // **********************************************************************
 //    Calcula o produto escalar entre os vetores V1 e V2
@@ -308,7 +309,7 @@ void getConvexHull(){
 
     //Ponto que usamos a cada iteracao para calcular os angulos.
     Ponto atual = ptMinimo;
-
+    ConvexHull.insereVertice(ptMinimo);
     //While true.
     while(1==1){
         //Calculamos primeiramente para o primeiro ponto do vetor.
@@ -342,6 +343,8 @@ void getConvexHull(){
             break;
         }
     }
+
+    cout << ConvexHull.getNVertices();
 }
 
 bool ehMaximoMinimoLocal(int indexPonto){
@@ -406,6 +409,35 @@ bool estaDentroForcaBruta(Ponto p){
     return intersecoes % 2 != 0;
 }
 
+/**
+ */
+bool estaDentroConvexHull(Ponto p){
+    Ponto atualPonto;
+    Ponto proximoPonto;
+
+    Ponto vAtual;
+    Ponto vAux;
+
+    Ponto result;
+
+    for(int i = 0; i < ConvexHull.getNVertices(); i++){
+        atualPonto = ConvexHull.getVertice(i);
+        proximoPonto = ConvexHull.getVertice(i+1);
+
+        vAtual = getVetor(atualPonto, proximoPonto);
+        vAux = getVetor(atualPonto, p);
+
+        result = Ponto();
+        ProdVetorial(vAtual, vAux, result);
+
+        if(result.z < 0){
+            return false;
+        }
+    }
+
+    return true;
+}
+
 void gerarPontosAleatorios(){
 
    for(int i = 0; i < qtdPontos; i++){
@@ -427,8 +459,33 @@ void gerarPontosAleatorios(){
 
 void classificaPontos(){
     for(int i = 0; i < qtdPontos; i++){
-        //Forca bruta
-        if(algotimoDeInclusao == 0){
+        //convex hull + forca bruta
+        if(algotimoDeInclusao == 1){
+            if(estaDentroConvexHull(pontosAleatorios[i])){
+                if(estaDentroForcaBruta(pontosAleatorios[i])){
+                    pontosAleatorios[i].setaCor(0, 0, 0.8);
+                }else{
+                    pontosAleatorios[i].setaCor(1, 1, 0);
+                }
+            } else {
+                pontosAleatorios[i].setaCor(0.8, 0, 0);
+            }
+        // convex hull + forca bruta usando faixas
+        } else if(algotimoDeInclusao == 2){
+            if(estaDentroForcaBruta(pontosAleatorios[i])){
+                pontosAleatorios[i].setaCor(0, 0, 0.8);
+            }else{
+                pontosAleatorios[i].setaCor(0.8, 0, 0);
+            }
+        //forca bruta
+        } else if(algotimoDeInclusao == 3){
+            if(estaDentroForcaBruta(pontosAleatorios[i])){
+                pontosAleatorios[i].setaCor(0, 0, 0.8);
+            }else{
+                pontosAleatorios[i].setaCor(0.8, 0, 0);
+            }
+        //forca bruta usando faixas
+        } else if(algotimoDeInclusao == 4){
             if(estaDentroForcaBruta(pontosAleatorios[i])){
                 pontosAleatorios[i].setaCor(0, 0, 0.8);
             }else{
@@ -467,13 +524,13 @@ void init(void)
 
     // Leitura do arquivo
     Mapa.insereVertice(Ponto(-2,1));
-    Mapa.insereVertice(Ponto(-3,5));
+    Mapa.insereVertice(Ponto(-3,6));
     Mapa.insereVertice(Ponto(3,3));
     Mapa.insereVertice(Ponto(5,5));
     Mapa.insereVertice(Ponto(5,3));
     Mapa.insereVertice(Ponto(8,-5));
     Mapa.insereVertice(Ponto(4,-1));
-    Mapa.insereVertice(Ponto(-1,-1));
+    Mapa.insereVertice(Ponto(-1,-2));
     Mapa.insereVertice(Ponto(-4,-3));
     Mapa.insereVertice(Ponto(-2,1));
 
