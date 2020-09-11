@@ -13,6 +13,8 @@
 // Selecione a pasta onde voce descompactou o ZIP que continha este arquivo.
 //
 
+//Bruno Lippert e Pedro Chem
+
 #include <iostream>
 #include <cmath>
 #include <ctime>
@@ -58,7 +60,7 @@ Ponto Min, Max;
 
 vector <Faixa> faixas;
 
-int qtdPontos = 30;
+int qtdPontos = 20000;
 vector <Ponto> pontosAleatorios;
 
 float distanciaEntreFaixas;
@@ -211,6 +213,15 @@ void carregaFaixas(){
         for(int faixa = faixaInicial; faixa < faixaFinal + 1; faixa++){
             faixas[faixa].addAresta(novaAresta);
         }
+    }
+
+     for(int faixa = 0; faixa < numFaixas; faixa++){
+        cout << "Faixa (" << faixa << "): ";
+        for(int i = 0; i < faixas[faixa].getArestas().size(); i++){
+            Aresta arest = faixas[faixa].getArestas()[i];
+            cout << "[" << "(" << arest.getP1().x << ", " << arest.getP1().y << ")" << "," << "(" << arest.getP1().x << ", " << arest.getP1().y << ")" << "], ";
+        }
+        cout << endl;
     }
 }
 
@@ -426,10 +437,10 @@ bool estaDentroForcaBrutaFaixas(Ponto p){
     Ponto pontoMaisEsquerda = Ponto(Min.x, p.y);
 
     int faixaDoPonto = (p.y - Min.y) / distanciaEntreFaixas;
-
-    for(int i = 0; i < faixas[faixaDoPonto].getArestas().size(); i++){
-        Ponto arestP1 = faixas[faixaDoPonto].getArestas()[i].getP1();
-        Ponto arestP2 = faixas[faixaDoPonto].getArestas()[i].getP2();
+    vector<Aresta> arestas = faixas[faixaDoPonto].getArestas();
+    for(int i = 0; i < arestas.size(); i++){
+        Ponto arestP1 = arestas[i].getP1();
+        Ponto arestP2 = arestas[i].getP2();
 
         if(HaInterseccao(p, pontoMaisEsquerda, arestP1, arestP2)){
             //Primeira condicao verifica se nao passa por um ponto qualquer do mapa
@@ -490,11 +501,8 @@ bool estaDentroConvexHull(Ponto p){
 void gerarPontosAleatorios(){
 
    for(int i = 0; i < qtdPontos; i++){
-        int range = Max.x - Min.x + 1;
-        int xRand = rand() % range + Min.x;
-
-        range = Max.y - Min.y + 1;
-        int yRand = rand() % range + Min.y;
+        float xRand = Min.x + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(Max.x-Min.x)));
+        float yRand = Min.y + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(Max.y-Min.y)));
 
         pontosAleatorios.push_back(Ponto(xRand, yRand));
     }
@@ -552,7 +560,7 @@ void printResults(){
 // **********************************************************************
 //
 // **********************************************************************
-void initOLD()
+void init()
 {
     // Define a cor do fundo da tela (AZUL)
     glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
@@ -572,7 +580,7 @@ void initOLD()
 //  void init(void)
 //  Inicializa os parametros globais de OpenGL
 // **********************************************************************
-void init(void)
+void initOLD(void)
 {
 	// Define a cor do fundo da tela (AZUL)
     glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
